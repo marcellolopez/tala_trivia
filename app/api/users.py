@@ -1,25 +1,21 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from app.schemas.user import UserCreate, UserOut
+
+from app.schemas.user import UserOut
 from app.crud import user as crud_user
-from app.core.database import SessionLocal
+from app.core.database import get_db
+from app.core.deps import get_current_user
+from app.models.user import User
 
 router = APIRouter()
 
-# Dependencia para obtener conexión a la base de datos
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-# Endpoint para crear un usuario
-@router.post("/", response_model=UserOut)
-def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    return crud_user.create_user(db, user)
-
-# Endpoint para listar usuarios (Con paginación)
-@router.get("/", response_model=list[UserOut])
-def read_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+# ------------------------------------------------------------
+# Devuelve la lista de usuarios registrados (requiere autenticación)
+@router.get("/", response_model=list[UserOut], summary="Listar usuarios", description="Requiere autenticación. Retorna la lista de usuarios registrados con paginación.")
+def read_users(
+    skip: int = 0,
+    limit: int = 10,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     return crud_user.get_users(db, skip=skip, limit=limit)

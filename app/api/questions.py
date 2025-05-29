@@ -3,16 +3,9 @@ from sqlalchemy.orm import Session
 from app.schemas.question import QuestionCreate, QuestionOut
 from app.crud import question as crud_question
 from app.core.database import SessionLocal
+from app.core.database import get_db
 
 router = APIRouter()
-
-# Dependencia para obtener conexión a la base de datos
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 # Endpoint para crear una nueva pregunta
 @router.post("/", response_model=QuestionOut)

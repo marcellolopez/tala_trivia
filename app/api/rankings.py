@@ -4,16 +4,9 @@ from typing import List
 from app.schemas.ranking import UserScore
 from app.crud.participation import get_trivia_ranking
 from app.core.database import SessionLocal
+from app.core.database import get_db
 
 router = APIRouter()
-
-# Dependencia para obtener conexión a la base de datos
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 # Endpoint para listar el ranking
 @router.get("/trivia/{trivia_id}", response_model=List[UserScore])

@@ -12,3 +12,6 @@ class User(Base):
 
     # Correo electrónico del usuario (debe ser único)
     email = Column(String, unique=True, index=True, nullable=False)
+
+    # Columna para almacenar el hash de la contraseña
+    password = Column(String, nullable=False)

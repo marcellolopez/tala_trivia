@@ -9,7 +9,13 @@ class UserBase(BaseModel):
 # ------------------------------------------------------------
 # Esquema utilizado para la creación de un nuevo usuario (entrada POST)
 class UserCreate(UserBase):
-    pass
+    password: str  
+
+# ------------------------------------------------------------
+# Esquema utilizado para autenticación (login)
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
 
 # ------------------------------------------------------------
 # Esquema para mostrar información de usuario (salida GET)
@@ -17,4 +23,4 @@ class UserOut(UserBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
