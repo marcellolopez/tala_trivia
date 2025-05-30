@@ -1,39 +1,42 @@
+# app/api/auth.py
+
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from app.schemas.user import UserCreate, UserLogin
-from app.models.user import User
-from app.core.auth import get_password_hash, verify_password, create_access_token
+
+from app.schemas.user import UserCreate, UserLogin, UserOut
+from app.core.auth import verify_password, create_access_token
 from app.core.database import get_db
+from app.crud import user as crud_user
 
-router = APIRouter()
+router = APIRouter(tags=["auth"])
 
-# ------------------------------------------------------------
-# Endpoint para registrar usuarios
-@router.post("/register")
+@router.post(
+    "/register",
+    response_model=UserOut,
+    summary="Registrar usuario",
+    description="Crea un usuario con nombre, email, password y role (por defecto player)."
+)
 def register(user_data: UserCreate, db: Session = Depends(get_db)):
-    existing_user = db.query(User).filter(User.email == user_data.email).first()
-    if existing_user:
+    # 1) Verificar que no exista otro email
+    if crud_user.get_user_by_email(db, user_data.email):
         raise HTTPException(status_code=400, detail="El correo ya está registrado")
 
-    password = get_password_hash(user_data.password)
-    new_user = User(
-        name=user_data.name,
-        email=user_data.email,
-        password=password  # ✅ Este es el campo real del modelo
-    )
+    # 2) Crear usuario (usa create_user de crud, que ahora maneja role)
+    new_user = crud_user.create_user(db, user_data)
+    return new_user
 
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-
-    return {"message": "Usuario registrado correctamente"}
-
-# ------------------------------------------------------------
-# Endpoint para login
-@router.post("/login")
+@router.post(
+    "/login",
+    summary="Iniciar sesión y obtener token JWT",
+    response_model=dict[str, str]
+)
 def login(login_data: UserLogin, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == login_data.email).first()
-    if not user or not verify_password(login_data.password, user.password):  # ✅ Mismo ajuste aquí
+    user = crud_user.get_user_by_email(db, login_data.email)
+    if not user:
+        # Usuario no existe
+        raise HTTPException(status_code=404, detail="Usuario no registrado")
+    if not verify_password(login_data.password, user.password):
+        # Contraseña incorrecta
         raise HTTPException(status_code=401, detail="Credenciales incorrectas")
 
     token = create_access_token({"sub": str(user.id)})

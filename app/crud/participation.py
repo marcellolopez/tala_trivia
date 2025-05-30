@@ -1,3 +1,4 @@
+# app/crud/participations.py
 from sqlalchemy.orm import Session
 from sqlalchemy import func, case, desc
 from app.models.participation import TriviaParticipation

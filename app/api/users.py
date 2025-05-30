@@ -19,3 +19,10 @@ def read_users(
     current_user: User = Depends(get_current_user)
 ):
     return crud_user.get_users(db, skip=skip, limit=limit)
+
+
+@router.get("/me", response_model=UserOut, summary="Usuario actual")
+def read_current_user(
+    current_user: User = Depends(get_current_user)
+):
+    return current_user
