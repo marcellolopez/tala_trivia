@@ -70,20 +70,8 @@ http://localhost:5173
 
 ## 🛠️ Creación de usuario **admin**
 
-Antes de usar el **panel de administración**, crea un usuario con rol `admin`:
+Antes de usar el **panel de administración**, crea un usuario con rol `admin` desde Swagger.
 
-1. Registra un nuevo usuario:
-   ```bash
-   curl -X POST http://localhost:8000/register \
-     -H "Content-Type: application/json" \
-     -d '{"name":"Admin","email":"admin@example.com","password":"TuPassword"}'
-   ```
-2. Actualiza su rol en la base de datos SQLite:
-   ```sql
-   UPDATE users SET role='admin' WHERE email='admin@example.com';
-   ```
-
----
 
 ## 🌐 URLs importantes
 
