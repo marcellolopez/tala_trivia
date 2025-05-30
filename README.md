@@ -108,3 +108,40 @@ tala_trivia/
 ├── docker-compose.yml
 └── README.md       # Este archivo
 ```
+
+
+## 🧪 Endpoints principales
+
+- `POST /users/` → Crear usuario
+- `POST /questions/` → Crear pregunta
+- `POST /trivias/` → Crear trivia y asociar preguntas/usuarios
+- `POST /participations/` → Registrar respuesta de usuario
+- `GET /ranking/trivia/{id}` → Ranking de trivia
+- `GET /trivias/` → Listar trivias
+
+⚙️ **Alembic (migraciones de base de datos)**
+
+Aún no implementado en este proyecto, pero se puede agregar así:
+
+```bash
+alembic init alembic
+```
+
+Luego editar `alembic.ini` y `env.py`, y utilizar:
+
+```bash
+alembic revision --autogenerate -m "create tables"
+alembic upgrade head
+```
+
+## 📝 Notas
+
+Las validaciones de entrada se manejan con Pydantic.
+
+El esquema sigue principios de separación de capas (modelos, lógica de negocio, validación).
+
+Usa SQLite por simplicidad, pero puede escalar a PostgreSQL fácilmente.
+
+🔗 **Autor**  
+Desarrollado como prueba técnica.  
+Marcello L. - mlc74163322@gmail.com
